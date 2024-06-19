@@ -8,3 +8,9 @@ CREATE TABLE product_data
     product_description varchar(max),
     active_product int NOT NULL
 );
+
+CREATE TABLE product_tracking
+(
+    product_id int identity(1, 1) NOT NULL,
+    transaction_count int NOT NULL
+);

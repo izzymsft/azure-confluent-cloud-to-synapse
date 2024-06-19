@@ -1,3 +1,7 @@
+.idea
+.vscode
+staging-*
+
 bin
 obj
 csx
