@@ -4,7 +4,7 @@
 
 # This will allow you to test your function endpoint to make sure they are ready to be intergrated with ASA
 
-@api_endpoint = http://localhost:7071
+@api_endpoint = https://contosopremiumapis.azurewebsites.net
 
 @conversation_id = 22334567
 # Make sure that you specify the api_endpoint and conversation_id shared variables in your extension config

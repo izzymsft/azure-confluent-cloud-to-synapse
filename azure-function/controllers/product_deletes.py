@@ -12,7 +12,7 @@ delete_controller = func.Blueprint()
 
 
 @delete_controller.function_name("products_delete")
-@delete_controller.route(route="products/delete", methods=["POST"],
+@delete_controller.route(route="products_delete", methods=["POST"],
                          auth_level=AuthLevel.ANONYMOUS)
 def product_delete(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')

@@ -12,7 +12,7 @@ upsert_controller = func.Blueprint()
 
 
 @upsert_controller.function_name("products_upsert")
-@upsert_controller.route(route="products/upsert", methods=["POST"],
+@upsert_controller.route(route="products_upsert", methods=["POST"],
                          auth_level=AuthLevel.ANONYMOUS)
 def product_upsert(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')

@@ -12,7 +12,7 @@ accumulate_controller = func.Blueprint()
 
 
 @accumulate_controller.function_name("products_accumulate")
-@accumulate_controller.route(route="products/accumulate", methods=["POST"],
+@accumulate_controller.route(route="products_accumulate", methods=["POST"],
                              auth_level=AuthLevel.ANONYMOUS)
 def product_accumulate(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')

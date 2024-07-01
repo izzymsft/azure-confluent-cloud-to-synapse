@@ -24,25 +24,28 @@ az group create --name premiumfunctions --location eastus
 # Create a General Purpose Storage Account in the same resource group and region
 az storage account create --name <STORAGE_NAME> --location <REGION> --resource-group <RESOURCE_GROUP_NAME> --sku Standard_LRS
 
-az storage account create --name premiumfunctionsdepot --location eastus --resource-group premiumfunctions --sku Standard_LRS
+az storage account create --name premiumfunctionsdepot --location eastus --resource-group ConfluentPOC --sku Standard_LRS
+
+# Delete if necessary
+az functionapp plan delete -g ConfluentPOC -n izzypremium
 
 ### Create a Premium Function Plan
-az functionapp plan create --name izzypremium --resource-group premiumfunctions --location eastus --sku EP1
+az functionapp plan create --name izzypremium --resource-group ConfluentPOC --location eastus --sku EP1 --is-linux 
 
 ### List the Function Plans you have in this group
-az functionapp plan list -g premiumfunctions -o json
+az functionapp plan list -g ConfluentPOC -o json
 
 ### List the Current Function Apps (if Any)
-az functionapp list -g premiumfunctions
+az functionapp list -g ConfluentPOC
 
 ### Tear Down any prior Function Apps (If Any)
-az functionapp delete -g premiumfunctions -n contosopremiumapis
+az functionapp delete -g ConfluentPOC -n contosopremiumapis
 
 ### Create a Function App with the Premium Plan
-az functionapp create --name contosopremiumapis --storage-account premiumfunctionsdepot --plan izzypremium --resource-group premiumfunctions --os-type linux --runtime python --runtime-version 3.11 --functions-version 4
+az functionapp create --name contosopremiumapis --storage-account premiumfunctionsdepot --plan izzypremium --resource-group ConfluentPOC --os-type linux --runtime python --runtime-version 3.11 --functions-version 4
 
 ### List all the functions in the group
-az functionapp list -g premiumfunctions
+az functionapp list -g ConfluentPOC
 ````
 
 ## Deploy the function project to Azure
@@ -53,6 +56,6 @@ az functionapp list -g premiumfunctions
 
 func azure functionapp publish contosopremiumapis
 
-az functionapp config appsettings set -g premiumfunctions -n contosopremiumapis --settings FUNCTIONS_WORKER_RUNTIME=python @appsettings.json
+az functionapp config appsettings set -g ConfluentPOC -n contosopremiumapis --settings FUNCTIONS_WORKER_RUNTIME=python @appsettings.json
 
 ````
