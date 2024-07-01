@@ -18,19 +18,25 @@ def product_delete(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
     headers = req.headers
-    request_body: list[Product] = req.get_json()
-    request_contents: bytes = req.get_body()
+
     conversation_id = headers.get("x-conversation-id", "")
     logging.info("Conversation Id: " + conversation_id)
 
     maximum_request_size = int(os.environ.get("MAXIMUM_REQUEST_SIZE", "262144"))
     maximum_batch_count = int(os.environ.get("MAXIMUM_BATCH_INBOUND_RECORDS", "100"))
 
+    request_contents: bytes = req.get_body()
     content_length = len(request_contents)
+
+    # handles empty requests (used for testing connectivity with ASA)
+    if content_length == 0:
+        return handle_empty_request()
+
+    request_body: list[Product] = req.get_json()
     batch_size = len(request_body)
 
     # handles empty requests (used for testing connectivity with ASA)
-    if content_length == 0 or batch_size == 0:
+    if batch_size == 0:
         return handle_empty_request()
 
     # handles large request exceeding batch size from ASA

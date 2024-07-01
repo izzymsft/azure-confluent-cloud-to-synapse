@@ -1,0 +1,160 @@
+# You will need to install the following VSCode extension: humao.rest-client
+
+# Please click on the "Send Request" option above each URL to transmit the request to the backend
+
+# This will allow you to test your function endpoint to make sure they are ready to be intergrated with ASA
+
+@api_endpoint = http://localhost:7071
+
+@conversation_id = 22334567
+# Make sure that you specify the api_endpoint and conversation_id shared variables in your extension config
+
+###
+
+# Use this to interact with the API (Click Send Request)
+# This send an empty body
+POST {{api_endpoint}}/api/products/upsert HTTP/1.1
+Content-Type: application/json
+x-conversation-id: {{conversation_id}}
+
+
+###
+
+# Use this to interact with the API (Click Send Request)
+# This sends an empty array
+POST {{api_endpoint}}/api/products/upsert HTTP/1.1
+Content-Type: application/json
+x-conversation-id: {{conversation_id}}
+
+[]
+
+### 
+
+# This is for INSERT and UPDATE operations
+# Use this to interact with the API (Click Send Request)
+POST {{api_endpoint}}/api/products/upsert HTTP/1.1
+Content-Type: application/json
+x-conversation-id: {{conversation_id}}
+
+[
+    {
+        "product_id": 1,
+        "product_name": "Rice",
+        "product_price": 30.75,
+        "coupon_code": "APC",
+        "product_description": "This is the product description for Rice",
+        "active_product": 1
+    },
+    {
+        "product_id": 2,
+        "product_name": "Beans",
+        "product_price": 19.75,
+        "coupon_code": "BOGO4",
+        "product_description": "This is the product description for Beans",
+        "active_product": 0
+    },
+    {
+        "product_id": 3,
+        "product_name": "Bread",
+        "product_price": 3.88,
+        "coupon_code": "BOGO1",
+        "product_description": "This is the product description for Bread",
+        "active_product": 1
+    },
+    {
+        "product_id": 4,
+        "product_name": "Milk",
+        "product_price": 4.75,
+        "coupon_code": "BOGO1",
+        "product_description": "This is the product description for Milk",
+        "active_product": 0
+    },
+    {
+        "product_id": 5,
+        "product_name": "Eggs",
+        "product_price": 22.75,
+        "coupon_code": "BOGO1",
+        "product_description": "This is the product description for Eggs",
+        "active_product": 1
+    }
+]
+
+
+### 
+
+# This is for accumulation scenarios
+# Use this to interact with the API (Click Send Request)
+POST {{api_endpoint}}/api/products/accumulate HTTP/1.1
+Content-Type: application/json
+x-conversation-id: {{conversation_id}}
+
+[
+    {
+        "product_id": 1,
+        "product_name": "Rice",
+        "product_price": 30.75,
+        "coupon_code": "APC",
+        "product_description": "This is the product description for Rice",
+        "active_product": 1
+    },
+    {
+        "product_id": 2,
+        "product_name": "Beans",
+        "product_price": 19.75,
+        "coupon_code": "BOGO4",
+        "product_description": "This is the product description for Beans",
+        "active_product": 0
+    },
+    {
+        "product_id": 3,
+        "product_name": "Bread",
+        "product_price": 3.88,
+        "coupon_code": "BOGO1",
+        "product_description": "This is the product description for Bread",
+        "active_product": 1
+    },
+    {
+        "product_id": 4,
+        "product_name": "Milk",
+        "product_price": 4.75,
+        "coupon_code": "BOGO1",
+        "product_description": "This is the product description for Milk",
+        "active_product": 0
+    },
+    {
+        "product_id": 5,
+        "product_name": "Eggs",
+        "product_price": 22.75,
+        "coupon_code": "BOGO1",
+        "product_description": "This is the product description for Eggs",
+        "active_product": 1
+    }
+]
+
+
+### 
+
+# This is for DELETE scenarios
+# Use this to interact with the API (Click Send Request)
+POST {{api_endpoint}}/api/products/delete HTTP/1.1
+Content-Type: application/json
+x-conversation-id: {{conversation_id}}
+
+[
+    {
+        "product_id": 8,
+        "product_name": "Rice",
+        "product_price": 30.75,
+        "coupon_code": "APC",
+        "product_description": "This is the product description for Rice",
+        "active_product": 1
+    },
+    {
+        "product_id": 9,
+        "product_name": "Beans",
+        "product_price": 19.75,
+        "coupon_code": "BOGO4",
+        "product_description": "This is the product description for Beans",
+        "active_product": 0
+    }
+]

@@ -118,7 +118,7 @@ class ProductOperations:
 
         sql_string = """
         MERGE INTO [{}] t
-        USING ( VALUES {} ) AS v (product_id, product_name, product_price, coupon_code, product_description, active_product)
+        USING ( VALUES {} ) AS v (product_id)
         ON t.product_id = v.product_id
         -- Replace when the key exists
         WHEN MATCHED THEN
