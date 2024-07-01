@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 
@@ -6,16 +5,16 @@ import azure.functions as func
 from azure.functions import AuthLevel
 
 from models.product import Product
-from shared.function_utils import APIContentTooLarge, APISuccessNoContent
-from shared.stream_analytics_operations import StreamAnalyticsOperation
+from shared.function_utils import APISuccessOK
+from shared.product_operations import ProductOperations, handle_empty_request, handle_request_too_large
 
-products_controller = func.Blueprint()
+upsert_controller = func.Blueprint()
 
 
-@products_controller.function_name("products_controller")
-@products_controller.route(route="products/{operation?}", methods=["POST"],
-                           auth_level=AuthLevel.ANONYMOUS)
-def ask_elizabeth(req: func.HttpRequest) -> func.HttpResponse:
+@upsert_controller.function_name("products_upsert")
+@upsert_controller.route(route="products/upsert", methods=["POST"],
+                          auth_level=AuthLevel.ANONYMOUS)
+def product_upsert(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
     headers = req.headers
@@ -38,37 +37,6 @@ def ask_elizabeth(req: func.HttpRequest) -> func.HttpResponse:
     if content_length > maximum_request_size or batch_size > maximum_batch_count:
         return handle_request_too_large(content_length, batch_size)
 
-    operation_name: StreamAnalyticsOperation = req.route_params.get('operation', None)
-
-    if operation_name == StreamAnalyticsOperation.UPSERT:
-        return handle_product_upsert(request_body)
-    elif operation_name == StreamAnalyticsOperation.ACCUMULATE:
-        return handle_products_accumulation_count(request_body)
-    else:
-        return handle_undefined_operation(request_body)
-
-
-def handle_request_too_large(row_count: int, content_length: int) -> func.HttpResponse:
-    response = {"message": "Request size too large", "row_count": row_count, "content_length": content_length}
-    json_string = json.dumps(response)
-    return APIContentTooLarge(json_string).build_response()
-
-
-def handle_empty_request() -> func.HttpResponse:
-    return APISuccessNoContent().build_response()
-
-
-def handle_undefined_operation(request_body: list[Product]) -> func.HttpResponse:
-    return None
-
-
-def handle_product_upsert(request_body: list[Product]) -> func.HttpResponse:
-    return None
-
-
-def handle_product_insert(request_body: list[Product]) -> func.HttpResponse:
-    return None
-
-
-def handle_products_accumulation_count(request_body: list[Product]) -> func.HttpResponse:
-    return None
+    operations = ProductOperations()
+    result = operations.handle_upsert(request_body)
+    return APISuccessOK(result).build_response()

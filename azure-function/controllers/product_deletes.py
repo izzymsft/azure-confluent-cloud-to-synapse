@@ -8,13 +8,13 @@ from models.product import Product
 from shared.function_utils import APISuccessOK
 from shared.product_operations import ProductOperations, handle_empty_request, handle_request_too_large
 
-accumulate_controller = func.Blueprint()
+delete_controller = func.Blueprint()
 
 
-@accumulate_controller.function_name("products_accumulate")
-@accumulate_controller.route(route="products/accumulate", methods=["POST"],
-                             auth_level=AuthLevel.ANONYMOUS)
-def product_accumulate(req: func.HttpRequest) -> func.HttpResponse:
+@delete_controller.function_name("products_delete")
+@delete_controller.route(route="products/delete", methods=["POST"],
+                         auth_level=AuthLevel.ANONYMOUS)
+def product_delete(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
     headers = req.headers
@@ -38,5 +38,6 @@ def product_accumulate(req: func.HttpRequest) -> func.HttpResponse:
         return handle_request_too_large(content_length, batch_size)
 
     operations = ProductOperations()
-    result = operations.handle_accumulate(request_body)
+    result = operations.handle_delete(request_body)
     return APISuccessOK(result).build_response()
+

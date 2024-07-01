@@ -1,10 +1,15 @@
+import json
 import os
 import re
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy import text
+
+import azure.functions as func
+
 from models.product import Product
+from shared.function_utils import APIContentTooLarge, APISuccessNoContent
 
 
 class ProductOperations:
@@ -16,15 +21,15 @@ class ProductOperations:
         connection_url = URL.create("mssql+pyodbc", query={"odbc_connect": connection_string})
         self.engine = create_engine(connection_url)
 
-    def prepare_product_rows(self, products: list[Product]) -> str:
+    def __prepare_product_rows(self, products: list[Product]) -> str:
         records: list[str] = []
         for product in products:
-            records.append(self.prepare_product_row(product))
+            records.append(self.__prepare_product_row(product))
 
         return ", ".join(records)
 
     @staticmethod
-    def prepare_row_accumulations(products: list[Product]) -> str:
+    def __prepare_row_accumulations(products: list[Product]) -> str:
         records: list[str] = []
         for product in products:
             product_id = product['product_id']
@@ -34,7 +39,7 @@ class ProductOperations:
 
         return ", ".join(records)
 
-    def prepare_product_row(self, record: Product):
+    def __prepare_product_row(self, record: Product):
         identifier: int = record['product_id']
         name: str = self.sanitize_string(record['product_name'])
         price: float = record['product_price']
@@ -47,7 +52,7 @@ class ProductOperations:
     def handle_upsert(self, products: list[Product]):
         connection = self.engine.connect()
         table_name = self.product_table_name
-        upsert_values = self.prepare_product_rows(products)
+        upsert_values = self.__prepare_product_rows(products)
 
         sql_string = """
         MERGE INTO [{}] t
@@ -81,7 +86,7 @@ class ProductOperations:
     def handle_accumulate(self, products: list[Product]):
         connection = self.engine.connect()
         table_name = self.product_count_table
-        row_values = self.prepare_row_accumulations(products)
+        row_values = self.__prepare_row_accumulations(products)
 
         sql_string = """
         MERGE INTO [{}] t
@@ -103,6 +108,30 @@ class ProductOperations:
         connection.close()
 
         print(sql_string)
+
+        return sql_string
+
+    def handle_delete(self, products: list[Product]):
+        connection = self.engine.connect()
+        table_name = self.product_table_name
+        upsert_values = self.__prepare_product_rows(products)
+
+        sql_string = """
+        MERGE INTO [{}] t
+        USING ( VALUES {} ) AS v (product_id, product_name, product_price, coupon_code, product_description, active_product)
+        ON t.product_id = v.product_id
+        -- Replace when the key exists
+        WHEN MATCHED THEN
+           DELETE;
+        """.format(table_name, upsert_values)
+
+        statement = text(sql_string)
+        result = connection.execute(statement)
+
+        print(sql_string)
+
+        connection.commit()
+        connection.close()
 
         return sql_string
 
@@ -133,3 +162,13 @@ class ProductOperations:
         sanitized_string = re.sub(r'[^\w\s]', '', sanitized_string)
 
         return sanitized_string
+
+
+def handle_request_too_large(row_count: int, content_length: int) -> func.HttpResponse:
+    response = {"message": "Request size too large", "row_count": row_count, "content_length": content_length}
+    json_string = json.dumps(response)
+    return APIContentTooLarge(json_string).build_response()
+
+
+def handle_empty_request() -> func.HttpResponse:
+    return APISuccessNoContent().build_response()
