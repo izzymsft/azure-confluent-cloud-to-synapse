@@ -1,0 +1,38 @@
+{
+    "doc": "An Avro schema describing the fields in a product record",
+    "fields": [
+      {
+        "doc": "The unique identifier for the product",
+        "name": "product_id",
+        "type": "int"
+      },
+      {
+        "doc": "The name of the product",
+        "name": "product_name",
+        "type": "string"
+      },
+      {
+        "doc": "The price of the product",
+        "name": "product_price",
+        "type": "float"
+      },
+      {
+        "doc": "The coupon code for the product",
+        "name": "coupon_code",
+        "type": "string"
+      },
+      {
+        "doc": "The product description",
+        "name": "product_description",
+        "type": "string"
+      },
+      {
+        "doc": "Whether or not the product is active",
+        "name": "active_product",
+        "type": "int"
+      }
+    ],
+    "name": "productRecord",
+    "namespace": "com.izzyacademy.ai.schemas",
+    "type": "record"
+  }

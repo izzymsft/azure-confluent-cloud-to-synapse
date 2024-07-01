@@ -42,8 +42,6 @@ def ask_elizabeth(req: func.HttpRequest) -> func.HttpResponse:
 
     if operation_name == StreamAnalyticsOperation.UPSERT:
         return handle_product_upsert(request_body)
-    elif operation_name == StreamAnalyticsOperation.INSERT:
-        return handle_product_insert(request_body)
     elif operation_name == StreamAnalyticsOperation.ACCUMULATE:
         return handle_products_accumulation_count(request_body)
     else:

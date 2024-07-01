@@ -11,7 +11,7 @@ CREATE TABLE product_data
 );
 
 MERGE INTO [{table_name}] t
-USING (VALUES {merge_values}) AS v (product_id,product_name,product_price,coupon_code,product_description,active_product)
+USING (VALUES {merge_values}) AS v (product_id, product_name, product_price, coupon_code, product_description, active_product)
 ON t.product_id = v.product_id
 -- Replace when the key exists
 WHEN MATCHED THEN
@@ -23,5 +23,5 @@ WHEN MATCHED THEN
         t.active_product = v.active_product
 -- Insert new keys
 WHEN NOT MATCHED BY t THEN
-    INSERT (product_id,product_name,product_price,coupon_code,product_description,active_product)
+    INSERT (product_id, product_name, product_price, coupon_code, product_description, active_product)
     VALUES (v.product_id, v.product_name, v.product_price, v.coupon_code, v.product_description, v.active_product)

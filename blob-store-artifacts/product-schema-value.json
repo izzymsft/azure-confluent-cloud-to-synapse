@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/myURI.schema.json",
+    "title": "Product",
+    "description": "Product schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "product_id": {
+        "type": "integer",
+        "description": "Uniquely identifies the product"
+      },
+      "product_name": {
+        "type": "string",
+        "description": "The name of the product"
+      },
+      "product_price": {
+        "type": "number",
+        "description": "The price of the product"
+      },
+      "coupon_code": {
+        "type": "string",
+        "description": "The coupon code for the product"
+      },
+      "product_description": {
+        "type": "string",
+        "description": "The product detailed description"
+      },
+      "active_product": {
+        "type": "integer",
+        "description": "Whether or not the product is actively displayed"
+      }
+    },
+    "required": [
+      "product_id",
+      "product_name",
+      "product_price",
+      "coupon_code",
+      "product_description",
+      "active_product"
+    ]
+  }

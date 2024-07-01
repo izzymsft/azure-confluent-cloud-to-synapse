@@ -1,4 +1,6 @@
 import os
+import re
+
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy import text
@@ -21,7 +23,8 @@ class ProductOperations:
 
         return ", ".join(records)
 
-    def prepare_row_accumulations(self, products: list[Product]) -> str:
+    @staticmethod
+    def prepare_row_accumulations(products: list[Product]) -> str:
         records: list[str] = []
         for product in products:
             product_id = product['product_id']
@@ -33,29 +36,13 @@ class ProductOperations:
 
     def prepare_product_row(self, record: Product):
         identifier: int = record['product_id']
-        name: str = record['product_name']
+        name: str = self.sanitize_string(record['product_name'])
         price: float = record['product_price']
-        coupon_code: str = record['coupon_code']
-        description: str = record['product_description']
+        coupon_code: str = self.sanitize_string(record['coupon_code'])
+        description: str = self.sanitize_string(record['product_description'])
         active: int = int(record['active_product'])
 
         return f"({identifier}, '{name}', {price}, '{coupon_code}', '{description}', {active})"
-
-    def handle_insert(self, products: list[Product]):
-        connection = self.engine.connect()
-        table_name = self.product_table_name
-
-        insert_values = self.prepare_product_rows(products)
-        sql_statement = text(
-            f"INSERT INTO {table_name} (product_id, product_name, product_price, coupon_code, product_description, "
-            f"active_product) VALUES {insert_values}")
-
-        result = connection.execute(sql_statement)
-
-        connection.commit()
-        connection.close()
-
-        return sql_statement
 
     def handle_upsert(self, products: list[Product]):
         connection = self.engine.connect()
@@ -81,7 +68,10 @@ class ProductOperations:
             v.coupon_code, v.product_description, v.active_product);
         """.format(table_name, upsert_values)
 
-        result = connection.execute(text(sql_string))
+        statement = text(sql_string)
+        result = connection.execute(statement)
+
+        print(sql_string)
 
         connection.commit()
         connection.close()
@@ -90,7 +80,7 @@ class ProductOperations:
 
     def handle_accumulate(self, products: list[Product]):
         connection = self.engine.connect()
-        table_name = self.product_table_name
+        table_name = self.product_count_table
         row_values = self.prepare_row_accumulations(products)
 
         sql_string = """
@@ -112,4 +102,34 @@ class ProductOperations:
         connection.commit()
         connection.close()
 
+        print(sql_string)
+
         return sql_string
+
+    @staticmethod
+    def sanitize_string(input_string: str) -> str:
+        """
+        Sanitizes a string for insertion into SQL database by escaping potentially dangerous characters.
+
+        Args:
+        input_string (str): The string to be sanitized.
+
+        Returns:
+        str: The sanitized string.
+        """
+        if input_string is None:
+            return None
+
+        if not isinstance(input_string, str):
+            raise ValueError("Input must be a string")
+
+        # Replace single quotes with two single quotes to escape them
+        sanitized_string = input_string.replace("'", "''")
+
+        # Add more replacements if necessary, e.g., for backslashes
+        sanitized_string = sanitized_string.replace("\\", "\\\\")
+
+        # Optionally remove any other unwanted characters
+        sanitized_string = re.sub(r'[^\w\s]', '', sanitized_string)
+
+        return sanitized_string

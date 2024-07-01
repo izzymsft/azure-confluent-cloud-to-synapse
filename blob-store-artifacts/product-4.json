@@ -1,0 +1,8 @@
+{
+    "product_id": 4,
+    "product_name": "Milk",
+    "product_price": 4.75,
+    "coupon_code": "BOGO1",
+    "product_description": "This is the product description for Milk",
+    "active_product": 0
+}

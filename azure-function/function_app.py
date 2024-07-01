@@ -1,6 +1,6 @@
 import azure.functions as func
 
-from controllers.products import products_controller
+from controllers.product_upserts import products_controller
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
